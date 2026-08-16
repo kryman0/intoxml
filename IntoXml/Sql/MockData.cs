@@ -1,14 +1,14 @@
 using IntoXml.Models;
 
-namespace IntoXml;
+namespace IntoXml.Sql;
 
-public class Data
+public static class MockData
 {
     public static List<AuditLog> ReadData()
     {
         var data = new List<AuditLog>
         {
-            new AuditLog
+            new ()
             {
                 Id = 1,
                 PatientFirstname = "Adam",
@@ -20,7 +20,7 @@ public class Data
                 Insats = "<insats><id>1</id></insats>",
                 LogDate = new DateTime(2026, 1, 1, 12, 13, 14)
             },
-            new AuditLog
+            new ()
             {
                 Id = 2,
                 PatientFirstname = "Bengt",
@@ -32,7 +32,7 @@ public class Data
                 Insats = "<insats><id>2</id></insats>",
                 LogDate = new DateTime(2026, 2, 1, 12, 12, 14)
             },
-            new AuditLog
+            new ()
             {
                 Id = 1,
                 PatientFirstname = "Carl",
@@ -44,7 +44,7 @@ public class Data
                 Insats = "<insats><id>3</id></insats>",
                 LogDate = new DateTime(2026, 2, 1, 12, 12, 14)
             },
-            new AuditLog
+            new ()
             {
                 Id = 1,
                 PatientFirstname = "Adam",
@@ -56,7 +56,7 @@ public class Data
                 Insats = "<insats><id>4</id></insats>",
                 LogDate = new DateTime(2025, 2, 2, 13, 14, 15)
             },
-            new AuditLog
+            new ()
             {
                 Id = 1,
                 PatientFirstname = "Adam",
