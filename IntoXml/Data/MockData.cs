@@ -1,6 +1,6 @@
 using IntoXml.Models;
 
-namespace IntoXml.Sql;
+namespace IntoXml.Data;
 
 public static class MockData
 {
