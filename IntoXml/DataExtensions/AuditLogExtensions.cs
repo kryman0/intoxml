@@ -6,15 +6,14 @@ namespace IntoXml.DataExtensions;
 
 public static class AuditLogExtensions
 {
-    public static AuditLog ConvertIntoAuditLog(this SqlDataReader reader)
+    public static T Convert<T>(this SqlDataReader reader, T singleObject)
     {
-        var auditLog = new AuditLog();
         for (int i = 0; i < reader.FieldCount; i++)
         {
-            var property = auditLog.GetType().GetProperty(reader.GetName(i))!;
+            var property = singleObject?.GetType().GetProperty(reader.GetName(i))!;
             var value = reader.IsDBNull(i) ? null : reader.GetValue(i);
-            property.SetValue(auditLog, value, null);
+            property.SetValue(singleObject, value, null);
         }
-        return auditLog;
+        return singleObject;
     }
 }

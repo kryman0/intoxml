@@ -11,7 +11,8 @@ var token = cts.Token;
 try
 {
     var sql = "select * from auditlog";
-    var dbData = await DbConnection.ExecuteSql<List<AuditLog>>(sql, token);
+    var list = new  List<AuditLog>();
+    var dbData = await DbConnection.ReadDataFromDb(sql, token, list);
     
 }
 catch (OperationCanceledException ex)

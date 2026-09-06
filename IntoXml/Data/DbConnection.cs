@@ -1,3 +1,4 @@
+using System.Reflection;
 using IntoXml.DataExtensions;
 using IntoXml.Models;
 using Microsoft.Data.SqlClient;
@@ -11,8 +12,14 @@ public class DbConnection
     {
         return new SqlConnection(_connStr);
     }
+
+    public static async Task<List<T>> ReadDataFromDb<T>(string sql, CancellationToken cancellationToken, List<T> list) where T : new()
+    {
+        list = await ExecuteSql(sql, cancellationToken, list);
+        return list;
+    }
     
-    public static async Task<object> ExecuteSql<T>(string sql, CancellationToken cancellationToken)
+    private static async Task<List<T>> ExecuteSql<T>(string sql, CancellationToken cancellationToken, List<T> list) where T : new()
     {
         await using var connection = GetConnectionToDatabase();
         var cmd = connection.CreateCommand();
@@ -20,22 +27,13 @@ public class DbConnection
         await connection.OpenAsync(cancellationToken);
         var reader = await cmd.ExecuteReaderAsync(cancellationToken);
         
-        // if (typeof(T).IsGenericType)
-        // {
-        //     return GetList(reader, cancellationToken);
-        // }
-        
-        var auditLogs = new List<AuditLog>();
         while (await reader.ReadAsync(cancellationToken))
         {
-            auditLogs.Add(reader.ConvertIntoAuditLog());
+            var obj = reader.Convert(new T());
+            list.Add(obj);
         }
         reader.Close();
-        return auditLogs;
+        
+        return list;
     }
-
-    // private IEnumerable<T> GetList(SqlDataReader reader, CancellationToken token)
-    // {
-    //     
-    // }
 }
