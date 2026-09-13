@@ -13,6 +13,13 @@ public static class XmlBuilder
             new XElement("Namn", patient.PatientFirstname + " " + patient.PatientLastname),
             new XElement("Pnr", patient.PatientPnr));
 
+        var doc2 = CreateDocument();
+        var root2Element = CreateRootElement("PlaneradeÅtgärder");
+        var patientElement2 = CreateParentElement("Patient");
+        var patientNameElement = CreateChildElement("Name", patient.PatientFirstname + " " + patient.PatientLastname);
+        patientNameElement.OntoParentAsFirst(patientElement2);
+        patientElement2.OntoParentAsFirst(root2Element);
+
         foreach (var logsByYear in auditLogs.GroupBy(x => x.LogDate.Year))
         {
             var doc = new XDocument(
@@ -37,4 +44,15 @@ public static class XmlBuilder
             doc.Save(filename);
         }
     }
+
+    public static XDocument CreateDocument() =>
+        new XDocument();
+    public static XElement CreateRootElement(string name) =>
+        new XElement(name);
+    public static XElement CreateParentElement(string name) =>
+        new XElement(name);
+    public static XElement CreateChildElement(string name, string value) =>
+        new XElement(name, value);
+    public static void OntoParentAsFirst(this XElement element, XElement parent) =>
+        parent.AddFirst(element);
 }
