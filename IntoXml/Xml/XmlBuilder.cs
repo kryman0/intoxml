@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using IntoXml.Models;
 using System.Xml.Linq;
 
@@ -13,12 +14,15 @@ public static class XmlBuilder
             new XElement("Namn", patient.PatientFirstname + " " + patient.PatientLastname),
             new XElement("Pnr", patient.PatientPnr));
 
-        var doc2 = CreateDocument();
-        var root2Element = CreateRootElement("PlaneradeÅtgärder");
-        var patientElement2 = CreateParentElement("Patient");
-        var patientNameElement = CreateChildElement("Name", patient.PatientFirstname + " " + patient.PatientLastname);
-        patientNameElement.OntoParentAsFirst(patientElement2);
-        patientElement2.OntoParentAsFirst(root2Element);
+        var doc2 = CreateDocument()
+            .AddRoot("PlaneradeÅtgärder")
+            .AddChildToParent("Patient", "PlaneradeÅtgärder")
+            .AddChildToParent("Name", patient.PatientFirstname + " " + patient.PatientLastname);
+        
+        // var patientElement2 = CreateParentElement("Patient");
+        // var patientNameElement2 = CreateChildElement("Name", patient.PatientFirstname + " " + patient.PatientLastname);
+        // patientNameElement2.ToParentAsFirst(patientElement2);
+        // patientElement2.ToParentAsFirst(rootElement2);
 
         foreach (var logsByYear in auditLogs.GroupBy(x => x.LogDate.Year))
         {
@@ -47,12 +51,27 @@ public static class XmlBuilder
 
     public static XDocument CreateDocument() =>
         new XDocument();
-    public static XElement CreateRootElement(string name) =>
-        new XElement(name);
-    public static XElement CreateParentElement(string name) =>
-        new XElement(name);
-    public static XElement CreateChildElement(string name, string value) =>
-        new XElement(name, value);
-    public static void OntoParentAsFirst(this XElement element, XElement parent) =>
-        parent.AddFirst(element);
+
+    private static XElement CreateRootElement(this XDocument document, string name)
+    {
+        var rootElement = new XElement(name);
+        document.AddFirst(rootElement);
+        return rootElement;
+    }
+    private static XElement CreateParentElement(this XElement parent, string name)
+    {
+        var parentElement = new XElement(name);
+        parent.Add(parentElement);
+        return parentElement;
+    }
+    private static XElement CreateChildElement(this XElement child, string name, string value)
+    {
+        var childElement = new XElement(name, value);
+        child.AddFirst(childElement);
+        return childElement;
+    }
+    public static XElement AddChildToParent(this XElement element, string parentElement, string name, string? value = null) =>
+        value != null ? element.CreateChildElement(name, value) : element.CreateParentElement(name);
+    public static XElement AddRoot(this XDocument document, string name) =>
+        document.CreateRootElement(name);
 }
