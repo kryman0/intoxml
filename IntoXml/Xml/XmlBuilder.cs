@@ -16,13 +16,10 @@ public static class XmlBuilder
 
         var doc2 = CreateDocument()
             .AddRoot("PlaneradeÅtgärder")
-            .AddChildToParent("Patient", "PlaneradeÅtgärder")
-            .AddChildToParent("Name", patient.PatientFirstname + " " + patient.PatientLastname);
-        
-        // var patientElement2 = CreateParentElement("Patient");
-        // var patientNameElement2 = CreateChildElement("Name", patient.PatientFirstname + " " + patient.PatientLastname);
-        // patientNameElement2.ToParentAsFirst(patientElement2);
-        // patientElement2.ToParentAsFirst(rootElement2);
+            .AddChild("Patient")
+            .AddChild("Name", patient.PatientFirstname + " " + patient.PatientLastname)
+            .AddAlso("Name1", patient.PatientFirstname + " " + patient.PatientLastname) // fix the order
+            .AddAlso("Name2", patient.PatientFirstname + " " + patient.PatientLastname);
 
         foreach (var logsByYear in auditLogs.GroupBy(x => x.LogDate.Year))
         {
@@ -70,8 +67,23 @@ public static class XmlBuilder
         child.AddFirst(childElement);
         return childElement;
     }
-    public static XElement AddChildToParent(this XElement element, string parentElement, string name, string? value = null) =>
+
+    public static XElement AddAlso(this XElement element, string name, string value)
+    {
+        var newElement = new XElement(name, value);
+        element.AddAfterSelf(newElement);
+        return element;
+    }
+        
+    public static XElement AddChild(this XElement element, string name, string? value = null) =>
         value != null ? element.CreateChildElement(name, value) : element.CreateParentElement(name);
+
+    public static XElement AddChildToParent(this XElement element, string name, string value, string parent)
+    {
+        var document = element.Document.Root.Element(parent);
+        return document;
+    }
+        
     public static XElement AddRoot(this XDocument document, string name) =>
         document.CreateRootElement(name);
 }
