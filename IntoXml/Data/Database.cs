@@ -1,4 +1,4 @@
-using IntoXml.DataExtensions;
+using IntoXml.Extensions;
 using Microsoft.Data.SqlClient;
 
 namespace IntoXml.Data;

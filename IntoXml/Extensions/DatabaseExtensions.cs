@@ -1,6 +1,6 @@
 using Microsoft.Data.SqlClient;
 
-namespace IntoXml.DataExtensions;
+namespace IntoXml.Extensions;
 
 public static class DatabaseExtensions
 {
