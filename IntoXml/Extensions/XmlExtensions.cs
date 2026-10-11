@@ -1,47 +1,52 @@
 using IntoXml.Models;
 using System.Xml.Linq;
+using IntoXml.Helpers;
 
 namespace IntoXml.Extensions;
 
 public static class XmlExtensions
 {
-    public static XmlObject CreateDocument(this XmlObject xml)
+    public static XmlObject CreateRoot(this XmlObject xml, string name, int id)
     {
-        xml.Document = new XDocument();
+        xml.Root = new Node(name, id);
         return xml;
     }
 
-    public static XmlObject AddRoot(this XmlObject xml, string name)
+    public static Node AddParent(this XmlObject xml, string name, int id)
     {
-        xml.Document.Root?.Add(new XElement(name));
+        var parent = new Node(name, id);
+        parent.Document = xml;
+        return parent;
+    }
+
+    public static XmlObject To(this Node node, int id)
+    {
+        var xml = node.Document;
+        if (xml.Root.Id == id)
+        {
+            xml.Root.Children.Add(node);
+        }
+        else
+        {
+            NodeHelper.GetById(xml.Root, id).Children.Add(node);
+        }
+
+        node.Document = null;
         return xml;
     }
-    private static XElement CreateParentElement(this XElement parent, string name)
+
+    public static Node AddChild(this XmlObject xml, string name, string value, int id)
     {
-        var parentElement = new XElement(name);
-        parent.Add(parentElement);
-        return parentElement;
-    }
-    private static XElement CreateChildElement(this XElement child, string name, string value)
-    {
-        var childElement = new XElement(name, value);
-        child.AddFirst(childElement);
-        return childElement;
+        var child = new Node(name, id, value);
+        child.Document = xml;
+        return child;
     }
 
-    public static XElement AddToChild(this XElement element, string name, string value)
+    public static XmlObject Build(this XmlObject xml)
     {
-        var newElement = new XElement(name, value);
-        element.Add(newElement);
-        return element;
-    }
-        
-    public static XElement AddChild(this XElement element, string name, string? value = null) =>
-        value != null ? element.CreateChildElement(name, value) : element.CreateParentElement(name);
-
-    public static XElement AddChildToParent(this XElement element, string name, string value, string parent)
-    {
-        var document = element.Document.Root.Element(parent);
-        return document;
+        var xmlString = string.Empty;
+        var elements = new List<string>();
+        NodeHelper.BuildXml(xml.Root, elements, 0);
+        return xml;
     }
 }

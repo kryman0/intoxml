@@ -13,16 +13,12 @@ public static class XmlBuilder
         var xmlService = new XmlService(new XmlObject());
         var xml = xmlService.GetXml();
         xml // validation will be needed to create structure of the xml dom in the correct order
-            .CreateDocument()
-            .AddRoot("PlaneradeÅtgärder");
+            .CreateRoot("Root", 1)
+            .AddParent("Patient", 2).To(1)
+            .AddChild("Age", "30", 3).To(2)
+            .AddChild("Gender", "Male", 4).To(2)
+            .Build();
         
-        // var doc2 = XmlExtensions.CreateDocument()
-        //     .AddRoot("PlaneradeÅtgärder")
-        //     .AddChild("Patient")
-        //     .AddChild("Name", patient.PatientFirstname + " " + patient.PatientLastname)
-        //     .AddToChild("Name1", patient.PatientFirstname + " " + patient.PatientLastname) // fix the order
-        //     .AddToChild("Name2", patient.PatientFirstname + " " + patient.PatientLastname);
-
         var a = 10;
         
     }
