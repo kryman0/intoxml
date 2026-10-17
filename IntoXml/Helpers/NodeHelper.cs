@@ -1,3 +1,5 @@
+using System.Text;
+using System.Xml.Linq;
 using IntoXml.Models;
 
 namespace IntoXml.Helpers;
@@ -18,19 +20,27 @@ public static class NodeHelper
         return node;
     }
     
-    public static List<string> BuildXml(Node node, List<string> elements, int iterator = 0)
+    public static void BuildXml(Node node, List<string> elements)
     {
-        if (!node.HasChildren)
-            elements.Add($"<{node.Name}>{node.Value}</{node.Name}>");
+        elements.Add($"<{node.Name}>");
         foreach (var child in node.Children)
         {
             if (child.HasChildren)
-            {
-                elements.Add($"<{node.Name}>");
-                BuildXml(child, elements, iterator + 1);
-            }
+                BuildXml(child, elements);
+            else
+                elements.Add($"<{child.Name}>{child.Value}</{child.Name}>");
         }
-        
-        return elements;
+        elements.Add($"</{node.Name}>");
+    }
+
+    public static XElement CreateXmlElement(List<string> elements)
+    {
+        var sb = new StringBuilder();
+        foreach (var element in elements)
+        {
+            sb.Append(element);
+            sb.AppendLine();
+        }
+        return XElement.Parse(sb.ToString());
     }
 }

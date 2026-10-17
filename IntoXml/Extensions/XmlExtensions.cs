@@ -46,7 +46,9 @@ public static class XmlExtensions
     {
         var xmlString = string.Empty;
         var elements = new List<string>();
-        NodeHelper.BuildXml(xml.Root, elements, 0);
+        NodeHelper.BuildXml(xml.Root!, elements);
+        var tree = NodeHelper.CreateXmlElement(elements);
+        tree.Save("tree.xml");
         return xml;
     }
 }
